@@ -32,14 +32,14 @@
 
 | Provider | Type | Notes |
 |---|---|---|
-| **OpenAI** | Cloud | GPT-4o, GPT-4, GPT-3.5, o1 series |
-| **Anthropic** | Cloud | Claude Opus, Sonnet, Haiku |
-| **Google Gemini** | Cloud | Gemini 2.0 Flash, 1.5 Pro, 1.0 Pro |
-| **Groq** | Cloud | Llama 3, Mixtral — ultra-fast inference |
-| **Mistral AI** | Cloud | Mistral Large, Medium, Small, Open models |
-| **OpenRouter** | Aggregator | Access 100+ models via one API |
-| **Ollama** | **Local** | Run Llama, Mistral, Gemma locally — free forever |
-| **Cohere** | Cloud | Command R+, Command R |
+| **OpenAI** | Cloud | GPT-5.5, GPT-5.5 Pro, GPT-5.4, o3 series, GPT Realtime 1.5 |
+| **Anthropic** | Cloud | Claude Opus 4.7, Sonnet 4.6, Haiku 4.5 |
+| **Google Gemini** | Cloud | Gemini 3.1 Pro, Gemini 3.1 Flash |
+| **Groq** | Cloud | Llama 4, Mixtral — ultra-fast inference |
+| **Mistral AI** | Cloud | Mistral Large 3, Mistral Small 4, Devstral 2 |
+| **OpenRouter** | Aggregator | Access 200+ models via one API |
+| **Ollama** | **Local** | Run Llama 4, Mistral, Gemma locally — free forever |
+| **Cohere** | Cloud | Command A series (Reasoning, Vision), Rerank 4 |
 | **Custom** | Any | Any OpenAI-compatible endpoint |
 
 ---
