@@ -54,8 +54,8 @@
 
 ```bash
 # 1. Clone the repository
-git clone https://github.com/your-username/prompt-management-system.git
-cd prompt-management-system
+git clone https://github.com/your-username/PromptCMS.git
+cd PromptCMS
 
 # 2. Install dependencies
 npm install
