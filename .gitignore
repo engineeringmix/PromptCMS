@@ -1,0 +1,34 @@
+# Dependencies
+node_modules/
+
+# Local data — contains API keys and personal prompts
+# DO NOT commit this to any public repository
+data/pms.json
+data/settings.json
+
+# Keep the data directory tracked but empty
+!data/.gitkeep
+
+# OS files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Editor
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Logs
+*.log
+npm-debug.log*
+
+# Environment
+.env
+.env.local
+.env.*.local
+
+# Build artifacts
+dist/
+build/

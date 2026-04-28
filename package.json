@@ -1,0 +1,19 @@
+{
+  "name": "prompt-management-system",
+  "version": "2.0.0",
+  "description": "Free, local-first Prompt Management System with full AI provider integration",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js"
+  },
+  "keywords": ["prompt","prompt-management","ai","llm","openai","anthropic","claude","gemini","groq","ollama","local","free"],
+  "author": "EngineeringMix",
+  "license": "MIT",
+  "engines": { "node": ">=16.0.0" },
+  "dependencies": {
+    "axios": "^1.7.2",
+    "cors": "^2.8.5",
+    "express": "^4.18.2"
+  }
+}
