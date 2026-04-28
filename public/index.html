@@ -1,0 +1,554 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>PMS — Prompt Management System</title>
+<meta name="description" content="Free, local-first Prompt Management System with AI provider integration."/>
+<link rel="stylesheet" href="/css/app.css"/>
+</head>
+<body>
+
+<!-- ════════════ TOP BAR ════════════ -->
+<div id="topbar">
+  <div class="brand">
+    <div class="brand-icon">P</div>
+    <div>
+      <div class="brand-name">PromptCMS</div>
+    </div>
+    <span class="brand-version">v2.1</span>
+  </div>
+
+  <div class="search-wrap">
+    <span class="search-icon">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+    </span>
+    <input type="text" id="global-search" placeholder="Search prompts, tags, variables…" autocomplete="off"/>
+    <span class="search-kbd">⌘K</span>
+  </div>
+
+  <div class="topbar-right">
+    <button class="btn-icon" title="Statistics" onclick="showView('stats')">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/><line x1="2" y1="20" x2="22" y2="20"/></svg>
+    </button>
+    <button class="btn-icon" title="Settings" onclick="showView('settings')">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+    </button>
+    <button class="btn-icon" title="Export All" onclick="exportAll()">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+    </button>
+    <button class="btn btn-primary" onclick="openNewPrompt()">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+      New Prompt
+    </button>
+  </div>
+</div>
+
+<!-- ════════════ APP BODY ════════════ -->
+<div id="app">
+
+  <!-- ── SIDEBAR ── -->
+  <div id="sidebar">
+    <div class="sidebar-scroll">
+
+      <div class="sidebar-section">
+        <div class="sidebar-label">Library</div>
+        <div class="nav-list">
+          <div class="nav-item active" data-view="all" onclick="showView('all')">
+            <span class="nav-icon"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg></span>
+            <span>All Prompts</span>
+            <span class="nav-count" id="cnt-all">0</span>
+          </div>
+          <div class="nav-item" data-view="favorites" onclick="showView('favorites')">
+            <span class="nav-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg></span>
+            <span>Favorites</span>
+            <span class="nav-count" id="cnt-fav">0</span>
+          </div>
+          <div class="nav-item" data-view="pinned" onclick="showView('pinned')">
+            <span class="nav-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="17" x2="12" y2="22"/><path d="M5 17h14v-1.76a2 2 0 0 0-1.11-1.79l-1.78-.9A2 2 0 0 1 15 10.76V6h1a2 2 0 0 0 0-4H8a2 2 0 0 0 0 4h1v4.76a2 2 0 0 1-1.11 1.79l-1.78.9A2 2 0 0 0 5 15.24Z"/></svg></span>
+            <span>Pinned</span>
+            <span class="nav-count" id="cnt-pin">0</span>
+          </div>
+          <div class="nav-item" data-view="collections" onclick="showView('collections')">
+            <span class="nav-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg></span>
+            <span>Collections</span>
+            <span class="nav-count" id="cnt-col">0</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="sidebar-divider"></div>
+
+      <div class="sidebar-section">
+        <div class="sidebar-label">Categories</div>
+        <div class="nav-list" id="cat-nav"></div>
+        <button class="sidebar-add" onclick="openNewCat()">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          Add Category
+        </button>
+      </div>
+
+      <div class="sidebar-divider"></div>
+
+      <div class="sidebar-section">
+        <div class="sidebar-label">Top Tags</div>
+        <div class="nav-list" id="tag-nav"></div>
+      </div>
+
+    </div>
+
+    <div class="sidebar-footer">
+      <div class="mini-stat">
+        <div class="mini-stat-num" id="mini-prompts">0</div>
+        <div class="mini-stat-lbl">Prompts</div>
+      </div>
+      <div class="mini-stat">
+        <div class="mini-stat-num" id="mini-uses">0</div>
+        <div class="mini-stat-lbl">Total Uses</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── MAIN ── -->
+  <div id="main">
+
+    <!-- Content toolbar -->
+    <div class="content-header">
+      <div class="content-title" id="content-title">All Prompts</div>
+
+      <div class="bulk-bar" id="bulk-bar">
+        <span id="bulk-count">0 selected</span>
+        <button class="btn btn-danger btn-sm" onclick="bulkDelete()">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/></svg>
+          Delete
+        </button>
+        <button class="btn btn-ghost btn-sm" onclick="clearSel()">Clear</button>
+      </div>
+
+      <div class="toolbar-right">
+        <!-- Custom sort dropdown mounts here -->
+        <div id="sort-sel-wrap"></div>
+        <div class="view-toggle">
+          <button class="view-btn active" id="vbtn-grid" title="Grid" onclick="setLayout('grid')">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+          </button>
+          <button class="view-btn" id="vbtn-list" title="List" onclick="setLayout('list')">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div id="content"></div>
+  </div>
+</div>
+
+
+<!-- ════════════ DETAIL MODAL ════════════ -->
+<div class="overlay" id="detail-modal">
+  <div class="modal modal-md">
+    <div class="detail-accent" id="detail-accent"></div>
+    <div class="modal-header">
+      <div style="flex:1">
+        <div class="detail-title" id="detail-title"></div>
+        <div class="detail-desc"  id="detail-desc"></div>
+        <div class="detail-meta"  id="detail-meta"></div>
+      </div>
+      <div style="display:flex;gap:6px;flex-shrink:0;align-items:center">
+        <button class="btn-icon" id="detail-fav" title="Favorite" onclick="detailToggleFav()"></button>
+        <button class="btn-icon" id="detail-pin" title="Pin"      onclick="detailTogglePin()"></button>
+        <button class="modal-close" onclick="closeOverlay('detail-modal')">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
+      </div>
+    </div>
+
+    <div class="modal-tabs">
+      <button class="mtab active" data-tab="info"    onclick="switchDetailTab('info')">Prompt</button>
+      <button class="mtab"        data-tab="history" onclick="switchDetailTab('history')">History</button>
+      <button class="mtab"        data-tab="runs"    onclick="switchDetailTab('runs')">Runs</button>
+    </div>
+
+    <div class="mtab-panel active" data-tab="info">
+      <div style="font-family:var(--font-mono);font-size:9px;color:var(--t3);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:8px">Prompt Content</div>
+      <div class="prompt-display" id="detail-content"></div>
+      <div style="margin-top:12px">
+        <div style="font-family:var(--font-mono);font-size:9px;color:var(--t3);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:6px">Tags</div>
+        <div id="detail-tags" style="display:flex;flex-wrap:wrap;gap:5px"></div>
+      </div>
+      <div id="detail-sysprompt" style="display:none;margin-top:12px">
+        <div style="font-family:var(--font-mono);font-size:9px;color:var(--t3);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:6px">System Prompt</div>
+        <div id="detail-sysprompt-text" style="font-family:var(--font-mono);font-size:11px;color:var(--t2);background:var(--bg0);border:1px solid var(--b1);border-radius:var(--r);padding:10px 12px;max-height:120px;overflow-y:auto;white-space:pre-wrap"></div>
+      </div>
+      <div style="display:flex;gap:8px;margin-top:16px;flex-wrap:wrap">
+        <button class="btn btn-primary" onclick="detailCopy()">Copy Prompt</button>
+        <button class="btn btn-secondary" onclick="detailRun()">Run with AI</button>
+        <button class="btn btn-secondary" onclick="detailEdit()">Edit</button>
+        <button class="btn btn-secondary" onclick="detailDuplicate()">Duplicate</button>
+        <button class="btn btn-danger" onclick="detailDelete()" style="margin-left:auto">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4h6v2"/></svg>
+        </button>
+      </div>
+    </div>
+
+    <div class="mtab-panel" data-tab="history">
+      <div id="ver-list"></div>
+    </div>
+
+    <div class="mtab-panel" data-tab="runs">
+      <div id="detail-runs"></div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ════════════ EDITOR MODAL ════════════ -->
+<div class="overlay" id="editor-modal">
+  <div class="modal modal-lg">
+    <div class="modal-header">
+      <div class="modal-title" id="editor-title">New Prompt</div>
+      <button class="modal-close" onclick="closeOverlay('editor-modal')">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </div>
+
+    <div class="modal-tabs">
+      <button class="mtab active" data-tab="edit"       onclick="switchEditorTab('edit')">Edit</button>
+      <button class="mtab"        data-tab="playground" onclick="switchEditorTab('playground')">Playground</button>
+      <button class="mtab"        data-tab="history"    onclick="switchEditorTab('history')">History</button>
+    </div>
+
+    <!-- Edit tab -->
+    <div class="mtab-panel active" data-tab="edit">
+      <div class="field">
+        <label class="field-label">Title <span class="req">*</span></label>
+        <input type="text" class="field-input" id="ef-title" placeholder="e.g., Blog Post Writer" autocomplete="off"/>
+      </div>
+      <div class="field">
+        <label class="field-label">Description</label>
+        <input type="text" class="field-input" id="ef-desc" placeholder="Brief description of what this prompt does…"/>
+      </div>
+      <div class="field-2col">
+        <div class="field">
+          <label class="field-label">Category</label>
+          <!-- PmsSelect mounts here -->
+          <div id="ef-cat-wrap" style="margin-top:0"></div>
+        </div>
+        <div class="field">
+          <label class="field-label">Recommended Model</label>
+          <input type="text" class="field-input" id="ef-model" placeholder="e.g., claude-opus-4-5, gpt-4o"/>
+        </div>
+      </div>
+      <div class="field">
+        <label class="field-label">System Prompt <span style="color:var(--t3);font-weight:400">(optional)</span></label>
+        <textarea class="field-textarea" id="ef-sysprompt" style="min-height:68px" placeholder="Role/persona instructions sent as the system message…"></textarea>
+      </div>
+      <div class="field">
+        <label class="field-label">Prompt Content <span class="req">*</span></label>
+        <div class="editor-wrap">
+          <div class="editor-toolbar">
+            <button class="etool var" onclick="insertVar()">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M8 3H7a2 2 0 0 0-2 2v5a2 2 0 0 1-2 2 2 2 0 0 1 2 2v5c0 1.1.9 2 2 2h1"/><path d="M16 21h1a2 2 0 0 0 2-2v-5c0-1.1.9-2 2-2a2 2 0 0 1-2-2V5a2 2 0 0 0-2-2h-1"/></svg>
+              {{variable}}
+            </button>
+            <button class="etool" onclick="wrapSel('**','**')">Bold</button>
+            <button class="etool" onclick="wrapSel('\`','\`')">Code</button>
+            <div class="editor-stats">
+              <span id="ed-chars">0 chars</span>
+              <span>~<span id="ed-tokens">0</span> tokens</span>
+            </div>
+          </div>
+          <textarea id="ef-content" class="editor-textarea" placeholder="Write your prompt here. Use {{variable_name}} for dynamic placeholders…" oninput="onContentChange()"></textarea>
+          <div class="vars-bar" id="vars-bar">
+            <span class="vars-bar-label">Vars:</span>
+            <span style="color:var(--t3);font-size:11px;font-family:var(--font-mono)">none detected</span>
+          </div>
+        </div>
+      </div>
+      <div class="field">
+        <label class="field-label">Tags</label>
+        <div class="tags-wrap" id="tags-wrap" onclick="document.getElementById('tags-input').focus()">
+          <input type="text" id="tags-input" class="tags-input" placeholder="Type tag + Enter…" onkeydown="handleTagKey(event)" autocomplete="off"/>
+        </div>
+        <div class="field-hint">Press Enter or comma to add. Click × to remove.</div>
+      </div>
+      <div class="field-2col">
+        <div class="field">
+          <label class="field-label">Version Note</label>
+          <input type="text" class="field-input" id="ef-versionote" placeholder="What changed? (optional)"/>
+        </div>
+        <div class="field" style="display:flex;align-items:flex-end;gap:20px;padding-bottom:2px">
+          <label style="display:flex;align-items:center;gap:7px;cursor:pointer;font-size:13px">
+            <input type="checkbox" id="ef-fav" style="accent-color:var(--amber);width:15px;height:15px"/> Favorite
+          </label>
+          <label style="display:flex;align-items:center;gap:7px;cursor:pointer;font-size:13px">
+            <input type="checkbox" id="ef-pin" style="accent-color:var(--ind);width:15px;height:15px"/> Pinned
+          </label>
+        </div>
+      </div>
+    </div>
+
+    <!-- Playground tab -->
+    <div class="mtab-panel" data-tab="playground">
+      <div id="pg-no-vars" style="display:none;padding:48px 0;text-align:center;color:var(--t3)">
+        <div style="font-size:40px;margin-bottom:12px;opacity:.3">
+          <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round"><path d="M8 3H7a2 2 0 0 0-2 2v5a2 2 0 0 1-2 2 2 2 0 0 1 2 2v5c0 1.1.9 2 2 2h1"/><path d="M16 21h1a2 2 0 0 0 2-2v-5c0-1.1.9-2 2-2a2 2 0 0 1-2-2V5a2 2 0 0 0-2-2h-1"/></svg>
+        </div>
+        <div style="font-family:var(--font-display);font-size:18px;color:var(--t2);margin-bottom:8px">No Variables Found</div>
+        <div style="font-size:13px">Add <code style="color:var(--ind-lt);background:var(--ind-bg);padding:1px 6px;border-radius:3px">{{variable}}</code> placeholders in the Edit tab.</div>
+      </div>
+      <div class="runner-layout" id="pg-has-vars">
+        <div class="runner-left">
+          <div style="font-family:var(--font-mono);font-size:9px;color:var(--t3);letter-spacing:2px;text-transform:uppercase;margin-bottom:10px">Fill Variables</div>
+          <div class="var-fields" id="pg-var-fields"></div>
+          <button class="btn btn-secondary btn-sm" onclick="copyRendered()" style="margin-top:14px">Copy Rendered Prompt</button>
+        </div>
+        <div>
+          <div style="font-family:var(--font-mono);font-size:9px;color:var(--t3);letter-spacing:2px;text-transform:uppercase;margin-bottom:10px">Live Preview</div>
+          <div class="response-box" style="min-height:260px">
+            <div class="response-header">
+              <div class="response-status"></div>
+              <span>Rendered Output</span>
+            </div>
+            <div class="response-body" id="pg-output" style="font-size:12px;color:var(--t2)"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- History tab -->
+    <div class="mtab-panel" data-tab="history">
+      <div id="ver-list"></div>
+    </div>
+
+    <div class="modal-footer">
+      <button class="btn btn-primary" onclick="savePrompt()">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+        Save Prompt
+      </button>
+      <button class="btn btn-ghost" onclick="closeOverlay('editor-modal')">Cancel</button>
+      <button class="btn btn-danger" id="ed-del" style="display:none;margin-left:auto" onclick="editorDelete()">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/></svg>
+        Delete
+      </button>
+    </div>
+  </div>
+</div>
+
+
+<!-- ════════════ RUN MODAL ════════════ -->
+<div class="overlay" id="run-modal">
+  <div class="modal modal-xl">
+    <div class="modal-header">
+      <div class="modal-title" id="run-modal-title">Run Prompt</div>
+      <button class="modal-close" onclick="closeOverlay('run-modal')">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </div>
+
+    <div style="display:grid;grid-template-columns:1fr 1fr;height:560px;overflow:hidden">
+
+      <!-- Left: config -->
+      <div style="padding:20px;border-right:1px solid var(--b1);overflow-y:auto;display:flex;flex-direction:column;gap:14px">
+
+        <div>
+          <div class="field-label" style="margin-bottom:7px">Provider</div>
+          <div id="run-provider-wrap"></div>
+        </div>
+
+        <div>
+          <div class="field-label" style="margin-bottom:7px">Model</div>
+          <div id="run-model-wrap"></div>
+          <input type="text" id="run-custom-model" placeholder="or type a custom model ID…"/>
+        </div>
+
+        <div>
+          <div class="field-label" style="margin-bottom:7px">Temperature</div>
+          <div style="display:flex;align-items:center;gap:10px">
+            <input type="range" min="0" max="2" step="0.1" value="0.7" oninput="updateTemp(this.value)" style="flex:1;accent-color:var(--ind)"/>
+            <span id="run-temp-val" style="font-family:var(--font-mono);font-size:12px;color:var(--ind-lt);min-width:28px;text-align:right">0.7</span>
+          </div>
+        </div>
+
+        <div>
+          <div class="field-label" style="margin-bottom:7px">System Prompt Override</div>
+          <textarea class="field-textarea" id="run-sysprompt" style="min-height:72px;font-size:11px" placeholder="Leave blank to use the saved system prompt…"></textarea>
+        </div>
+
+        <div id="run-var-area"></div>
+
+        <button class="run-btn" id="run-execute-btn" onclick="executeRun()">
+          <div class="run-spinner" id="run-spin" style="display:none"></div>
+          <span id="run-spin-label">Run Prompt</span>
+        </button>
+      </div>
+
+      <!-- Right: preview + response -->
+      <div style="display:flex;flex-direction:column;overflow:hidden">
+        <div style="flex:0 0 auto;max-height:200px;overflow-y:auto;padding:14px 20px;border-bottom:1px solid var(--b1)">
+          <div style="font-family:var(--font-mono);font-size:9px;color:var(--t3);letter-spacing:2px;text-transform:uppercase;margin-bottom:8px">Rendered Prompt Preview</div>
+          <div id="run-preview" style="font-family:var(--font-mono);font-size:11.5px;color:var(--t2);line-height:1.7;white-space:pre-wrap;word-break:break-word"></div>
+        </div>
+        <div style="flex:1;display:flex;flex-direction:column;overflow:hidden">
+          <div class="response-box" style="flex:1;border-radius:0;border:none;border-top:1px solid var(--b1)">
+            <div class="response-header">
+              <div class="response-status" id="run-status"></div>
+              <span>AI Response</span>
+              <span id="run-meta-info" style="margin-left:8px;flex:1;font-size:9px;color:var(--t3)"></span>
+              <button onclick="copyRunResponse()" style="background:transparent;border:none;color:var(--ind-lt);cursor:pointer;font-size:11px;font-family:var(--font-mono)">Copy</button>
+            </div>
+            <div class="response-body" id="run-response"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ════════════ ADD PROVIDER MODAL ════════════ -->
+<div class="overlay" id="add-prov-modal">
+  <div class="modal modal-md">
+    <div class="modal-header">
+      <div class="modal-title" id="add-prov-title">Add AI Provider</div>
+      <button class="modal-close" onclick="closeOverlay('add-prov-modal')">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </div>
+
+    <!-- Step 1: choose type -->
+    <div id="prov-step1" style="padding:20px">
+      <div style="font-size:13px;color:var(--t2);margin-bottom:16px">Select the AI provider type to connect:</div>
+      <div class="ptype-grid" id="prov-type-grid"></div>
+      <div style="display:flex;gap:8px;margin-top:20px">
+        <button class="btn btn-primary" onclick="provTypeNext()">Continue</button>
+        <button class="btn btn-ghost"   onclick="closeOverlay('add-prov-modal')">Cancel</button>
+      </div>
+    </div>
+
+    <!-- Step 2: configure -->
+    <div id="prov-step2" style="display:none;padding:20px">
+      <div class="field">
+        <label class="field-label">Display Name</label>
+        <input type="text" class="field-input" id="prov-name" placeholder="e.g., My OpenAI" autocomplete="off"/>
+      </div>
+      <div class="field">
+        <label class="field-label">API Key <span style="color:var(--t3);font-weight:400">(stored locally only — never sent anywhere)</span></label>
+        <input type="password" class="field-input" id="prov-apikey" placeholder="sk-…" autocomplete="new-password"/>
+        <div class="field-hint">Stored only in <code>data/settings.json</code> on your local machine.</div>
+      </div>
+      <div class="field">
+        <label class="field-label">Base URL <span style="color:var(--t3);font-weight:400">(auto-filled — change for self-hosted)</span></label>
+        <input type="text" class="field-input" id="prov-baseurl" placeholder="https://api.openai.com/v1" autocomplete="off"/>
+      </div>
+      <div class="field-2col">
+        <div class="field">
+          <label class="field-label">Default Model</label>
+          <div id="prov-defmodel-wrap"></div>
+        </div>
+        <div class="field">
+          <label class="field-label">Custom Model ID</label>
+          <input type="text" class="field-input" id="prov-defmodel" placeholder="or type a custom model ID" autocomplete="off"/>
+        </div>
+      </div>
+      <div class="field" style="display:flex;align-items:center;gap:10px">
+        <input type="checkbox" id="prov-enabled" checked style="accent-color:var(--ind);width:15px;height:15px"/>
+        <label for="prov-enabled" style="cursor:pointer;font-size:13px">Provider enabled</label>
+      </div>
+      <div style="display:flex;gap:8px;margin-top:20px">
+        <button class="btn btn-primary" onclick="saveProvider()">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+          Save Provider
+        </button>
+        <button class="btn btn-ghost" onclick="closeOverlay('add-prov-modal')">Cancel</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ════════════ CATEGORY MODAL ════════════ -->
+<div class="overlay" id="cat-modal">
+  <div class="modal modal-sm">
+    <div class="modal-header">
+      <div class="modal-title" id="cat-modal-title">New Category</div>
+      <button class="modal-close" onclick="closeOverlay('cat-modal')">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </div>
+    <div style="padding:20px">
+      <div class="field">
+        <label class="field-label">Name</label>
+        <input type="text" class="field-input" id="cat-name" placeholder="e.g., Email Templates" autocomplete="off"/>
+      </div>
+      <div class="field">
+        <label class="field-label">Icon (emoji)</label>
+        <input type="text" class="field-input" id="cat-icon" placeholder="📧" maxlength="4"/>
+      </div>
+      <div class="field">
+        <label class="field-label">Color</label>
+        <div class="color-palette" id="cat-swatches"></div>
+      </div>
+      <div style="display:flex;gap:8px;margin-top:18px">
+        <button class="btn btn-primary" onclick="saveCat()">Save</button>
+        <button class="btn btn-ghost"   onclick="closeOverlay('cat-modal')">Cancel</button>
+        <button class="btn btn-danger"  id="cat-del" style="display:none;margin-left:auto" onclick="delCat()">Delete</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ════════════ COLLECTION MODAL ════════════ -->
+<div class="overlay" id="col-modal">
+  <div class="modal modal-sm">
+    <div class="modal-header">
+      <div class="modal-title" id="col-modal-title">New Collection</div>
+      <button class="modal-close" onclick="closeOverlay('col-modal')">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </div>
+    <div style="padding:20px">
+      <div class="field">
+        <label class="field-label">Name</label>
+        <input type="text" class="field-input" id="col-name" placeholder="e.g., Daily Workflow" autocomplete="off"/>
+      </div>
+      <div class="field">
+        <label class="field-label">Description</label>
+        <input type="text" class="field-input" id="col-desc" placeholder="What's this collection for?"/>
+      </div>
+      <div class="field">
+        <label class="field-label">Color</label>
+        <div class="color-palette" id="col-swatches"></div>
+      </div>
+      <div style="display:flex;gap:8px;margin-top:18px">
+        <button class="btn btn-primary" onclick="saveCol()">Save</button>
+        <button class="btn btn-ghost"   onclick="closeOverlay('col-modal')">Cancel</button>
+        <button class="btn btn-danger"  id="col-del" style="display:none;margin-left:auto" onclick="delCol()">Delete</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ════════════ CONFIRM MODAL ════════════ -->
+<div class="overlay" id="confirm-modal">
+  <div class="modal modal-sm">
+    <div class="modal-header">
+      <div class="modal-title" id="confirm-title">Are you sure?</div>
+    </div>
+    <div class="confirm-msg" id="confirm-msg">This action cannot be undone.</div>
+    <div class="confirm-actions">
+      <button class="btn btn-ghost"  onclick="closeOverlay('confirm-modal')">Cancel</button>
+      <button class="btn btn-danger" id="confirm-ok">Delete</button>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════ TOAST & NOTIF ════════════ -->
+<div id="toast"></div>
+<div id="notif"></div>
+
+<script src="/js/app.js"></script>
+</body>
+</html>
